@@ -3,12 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const container = document.querySelector('.containers');
   
   searchBox.addEventListener('keyup', function(e) {
-    const searchTerm = e.target.value.trim().toLowerCase(); // Get the entered search term and convert to lowercase
+    const searchTerm = e.target.value.trim().toLowerCase();
+    console.log(e.target.value.trim().toLowerCase())
     
-    // Only proceed if the search term is not empty
     if (searchTerm) {
-      // Fetch API
-      fetch(`https://api.github.com/search/users?q=${searchTerm}&since=0`) // Fetch users matching the search term
+      fetch(`https://api.github.com/search/users?q=${searchTerm}&since=0`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -17,16 +16,22 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
           const users = data.items;
-          container.innerHTML = ''
+          container.innerHTML = '';
           
           users.forEach(user => {
-            container.innerHTML += `
-              <div class="child">
-                <img src="${user.avatar_url}" alt="icon">
-                <h3>${user.login}</h3>
-                <button>View Profile</button>
-              </div>
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('child');
+            userDiv.innerHTML = `
+              <img src="${user.avatar_url}" alt="icon">
+              <h3>${user.login}</h3>
+              <button class="redirectButton">View Profile</button>
             `;
+            container.appendChild(userDiv);
+            
+            const button = userDiv.querySelector('.redirectButton');
+            button.addEventListener('click', function() {
+              window.open(user.html_url, '_blank');
+            });
           });
         })
         .catch(error => {
